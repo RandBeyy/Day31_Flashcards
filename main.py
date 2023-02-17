@@ -46,17 +46,31 @@ def reveal_card():
 def next_card():
     global new_word
     new_word = choice(french_dict)
+    french_dict.remove(new_word)
     flashcard.itemconfig(image, image=CARD_FRONT)
     flashcard.itemconfig(lang, text="French")
     flashcard.itemconfig(word, text=new_word["fr"])
     wrong_button["state"] = "disabled"
     right_button["state"] = "disabled"
+    print(len(french_dict))
     app_win.after(1000, reveal_card)
+
+def delete_card():
+    with open('data/french_words.csv', 'w') as f:
+        writer=csv.writer(f)
+        for word in french_dict:
+            writer.writerow(word.values())
+
+    next_card()
+
+def return_card():
+    french_dict.append(new_word)
+    next_card()
     
 
-wrong_button = tk.Button(app_win, image=WRONG, bd=0, command=next_card)
+wrong_button = tk.Button(app_win, image=WRONG, bd=0, command=return_card)
 wrong_button.grid(row=1, column=0, sticky=tk.W, padx=150)
-right_button = tk.Button(app_win, image=RIGHT, bd=0, command=next_card)
+right_button = tk.Button(app_win, image=RIGHT, bd=0, command=delete_card)
 right_button.grid(row=1, column=1, sticky=tk.E, padx=150)
 
 next_card()
